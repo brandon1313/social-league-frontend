@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  TextField,
   Button,
   Container,
   Select,
@@ -25,7 +24,7 @@ const Category = () => {
   const [type, setType] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState(null);
-  const { isLoading, error, postRequest } = usePostRequestWithLoading(URL);
+  const { _isLoading, _error, postRequest } = usePostRequestWithLoading(URL);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -52,7 +51,8 @@ const Category = () => {
       level,
       type,
     };
-    await postRequest(newCategory);
+    await postRequest(newCategory, "POST");
+    await getCategoriesFromApi();
     setLevel("");
     setType("");
   };
@@ -67,25 +67,22 @@ const Category = () => {
     }
   };
 
-  const handleUpdateCategory = () => {
+  const handleUpdateCategory = async () => {
     if (!level || !type) return;
 
-    setCategories((prevCategories) =>
-      prevCategories.map((category) =>
-        category.id === editCategoryId ? { ...category, level, type } : category
-      )
-    );
+    const editCategory = {
+      level,
+      type,
+    };
+    await postRequest(editCategory, "PUT", editCategoryId);
+    await getCategoriesFromApi();
     setLevel("");
     setType("");
     setIsEditing(false);
     setEditCategoryId(null);
   };
 
-  const handleDeleteCategory = (id) => {
-    setCategories(categories.filter((category) => category.id !== id));
-  };
-
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (_event, newPage) => {
     setPage(newPage);
   };
 
@@ -173,9 +170,6 @@ const Category = () => {
                 <TableCell>
                   <Button onClick={() => handleEditCategory(category.id)}>
                     Editar
-                  </Button>
-                  <Button onClick={() => handleDeleteCategory(category.id)}>
-                    Eliminar
                   </Button>
                 </TableCell>
               </TableRow>

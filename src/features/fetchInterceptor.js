@@ -12,15 +12,10 @@ const fetchInterceptor = (url, options) => {
   return originalFetch(url, options)
     .then(async (response) => {
       if (url.indexOf("authentication") !== -1) {
-        if (!response.ok) {
-          throw new Error("Network response was not ok.");
-        }
-
         return response;
       }
 
       if (response.status === 401) {
-        console.log("LOGIN???");
         window.location.href = "/login";
       }
 

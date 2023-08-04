@@ -11,10 +11,9 @@ function App() {
       <Routes>
         {<Route exact path="/login" element={<LoginForm />} />}
         <Route exact path="/" element={<HomePage />}>
-          {
-            ((<Route path="/users" element={<User />} />),
-            (<Route path="/category" element={<Category />} />))
-          }
+          {<Route path="/users" element={<User />} />}
+          {<Route path="/category" element={<Category />} />}
+
           <Route path="*" element={<div> </div>} />
         </Route>
       </Routes>

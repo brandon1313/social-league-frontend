@@ -67,7 +67,7 @@ export const ListMenu = () => {
               <ListItemIcon>
                 <LanguageIcon />
               </ListItemIcon>
-              <ListItemText primary="Jugadores" />
+              <ListItemText primary="Categorias" />
             </ListItemButton>
           </List>
         </Collapse>

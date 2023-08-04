@@ -18,6 +18,7 @@ export const MenuSettings = () => {
   };
 
   const handleLogout = () => {
+    console.log("LOGIN???");
     navigate("/login");
     window.localStorage.removeItem("TOKEN");
   };
