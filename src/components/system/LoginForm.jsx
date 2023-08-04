@@ -58,7 +58,7 @@ export const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await postRequest(userData);
+      await postRequest(userData, "POST");
       navigate("/home");
     } catch (error) {
       showSnackbar(error.message, "error");

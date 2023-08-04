@@ -128,6 +128,7 @@ const Category = () => {
         >
           <MenuItem value="MALE">Masculina</MenuItem>
           <MenuItem value="FEMALE">Femenina</MenuItem>
+          <MenuItem value="TEAM">Equipo</MenuItem>
         </Select>
       </FormControl>
 
@@ -165,7 +166,11 @@ const Category = () => {
                 <TableCell>{category.id}</TableCell>
                 <TableCell>{category.level}</TableCell>
                 <TableCell>
-                  {category.type === "MALE" ? "MASCULINA" : "FEMENINA"}
+                  {category.type === "MALE"
+                    ? "MASCULINA"
+                    : category.type === "FEMALE"
+                    ? "FEMENINA"
+                    : "TEAM"}
                 </TableCell>
                 <TableCell>
                   <Button onClick={() => handleEditCategory(category.id)}>
