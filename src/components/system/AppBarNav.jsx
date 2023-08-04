@@ -1,6 +1,6 @@
 import { AppBar, Box, Container, IconButton, Toolbar, Typography } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
-import ConnectingAirportsIcon from '@mui/icons-material/ConnectingAirports';
+import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import MenuSettings from './MenuSettings';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,7 +36,7 @@ export const AppBarNav = () => {
                                     <MenuIcon />
                             </IconButton>
                             <Box sx={{ flexGrow: 1, display: { xs: 'flex' } }} >
-                                <ConnectingAirportsIcon sx = {{ mr: 1 }} />
+                                <GroupWorkIcon sx = {{ mr: 3, fontSize:40 }} />
                                 <Typography 
                                     variant= 'h5' 
                                     noWrap 
@@ -51,7 +51,7 @@ export const AppBarNav = () => {
                                         textDecoration: 'none'
                                     }}
                                     >
-                                    Columbus travel
+                                    Liga Social
                                 </Typography>
                             </Box>
                             <MenuSettings />

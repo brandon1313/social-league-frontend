@@ -1,75 +1,79 @@
 import { useState } from "react";
-import { List, ListItemText, ListItemButton, ListItemIcon, Collapse, Divider, Toolbar } from "@mui/material";
+import {
+  List,
+  ListItemText,
+  ListItemButton,
+  ListItemIcon,
+  Collapse,
+  Divider,
+  Toolbar,
+} from "@mui/material";
 
-import SettingsIcon from '@mui/icons-material/Settings';
-import LoyaltyIcon from '@mui/icons-material/Loyalty';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import SettingsAccessibilityIcon from '@mui/icons-material/SettingsAccessibility';
-import LanguageIcon from '@mui/icons-material/Language';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import SourceIcon from '@mui/icons-material/Source';
-import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import SettingsIcon from "@mui/icons-material/Settings";
+
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility";
+import LanguageIcon from "@mui/icons-material/Language";
 import { useNavigate } from "react-router-dom";
 
-
 export const ListMenu = () => {
+  const [openSettings, setOpenSettings] = useState(false);
+  const [openSales, setOpenSales] = useState(false);
 
-    const [ openSettings, setOpenSettings ] = useState(false);
-    const [ openSales, setOpenSales ] = useState(false);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const handleSettingsClick = () => {
+    setOpenSettings(!openSettings);
+  };
 
-    const handleSettingsClick = () => {
-        setOpenSettings(!openSettings);
-    }
+  const handleSalesClick = () => {
+    setOpenSales(!openSales);
+  };
 
-    const handleSalesClick = () => {
-        setOpenSales(!openSales);
-    }
-
-    return(
-        <>
-            <Toolbar />
-            <Divider />
-            <List>
-
-                    <ListItemButton>
+  return (
+    <>
+      <Toolbar />
+      <Divider />
+      <List>
+        {/* <ListItemButton>
                         <ListItemIcon >
                             <DashboardIcon />
                         </ListItemIcon>
                         <ListItemText primary = 'Tablero' />
                     </ListItemButton>
 
-                    <Divider />
+                    <Divider /> */}
 
-                    <ListItemButton onClick = { handleSettingsClick } >
-                        <ListItemIcon >
-                            <SettingsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary = 'Configuraciones' />
-                        { openSettings ? <ExpandLess /> : <ExpandMore /> }
-                    </ListItemButton>
-                    <Collapse in = { openSettings } timeout = 'auto' unmountOnExit >
-                        <List component = 'div' disablePadding >
-                            <ListItemButton sx={{ pl: 4}} onClick={ () => navigate('/guides')} >
-                                <ListItemIcon >
-                                    <SettingsAccessibilityIcon />
-                                </ListItemIcon>
-                                <ListItemText primary = 'Guias' />
-                            </ListItemButton>
-                            <ListItemButton sx={{ pl: 4}} onClick={ () => navigate('/languages')} >
-                                <ListItemIcon  >
-                                    <LanguageIcon />
-                                </ListItemIcon>
-                                <ListItemText primary = 'Lenguajes' />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
+        <ListItemButton onClick={handleSettingsClick}>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Mantenimiento" />
+          {openSettings ? <ExpandLess /> : <ExpandMore />}
+        </ListItemButton>
+        <Collapse in={openSettings} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate("/users")}>
+              <ListItemIcon>
+                <SettingsAccessibilityIcon />
+              </ListItemIcon>
+              <ListItemText primary="Usuarios" />
+            </ListItemButton>
+            <ListItemButton
+              sx={{ pl: 4 }}
+              onClick={() => navigate("/category")}
+            >
+              <ListItemIcon>
+                <LanguageIcon />
+              </ListItemIcon>
+              <ListItemText primary="Jugadores" />
+            </ListItemButton>
+          </List>
+        </Collapse>
 
-                    <Divider />
-
+        <Divider />
+        {/* 
                     <ListItemButton onClick = { handleSalesClick } >
                         <ListItemIcon >
                             <LoyaltyIcon />
@@ -98,10 +102,10 @@ export const ListMenu = () => {
                                 <ListItemText primary = 'Nueva venta' />
                             </ListItemButton>
                         </List>
-                    </Collapse>
-            </List>
-        </>
-    )
+                    </Collapse> */}
+      </List>
+    </>
+  );
 };
 
 export default ListMenu;
