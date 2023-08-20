@@ -43,10 +43,10 @@ const User = () => {
       password,
     };
     try {
-      await postRequest(newUser);
+      await postRequest(newUser, "POST");
       showSnackbar("User created successfully!", "success");
     } catch (err) {
-      showSnackbar("Error creating user.", error);
+      showSnackbar("Error creating user.", "error");
     }
     setUsers([...users, newUser]);
     setUsername("");

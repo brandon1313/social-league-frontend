@@ -16,6 +16,8 @@ import {
   TablePagination,
 } from "@mui/material";
 import usePostRequestWithLoading from "../../features/usePostRequestWithLoading";
+import useSnackbar from "../../features/useSnackbar";
+import SnackbarMessage from "../system/SnackBarMessage";
 
 const Category = () => {
   const URL = "http://localhost:9898/api/category";
@@ -27,6 +29,13 @@ const Category = () => {
   const { _isLoading, _error, postRequest } = usePostRequestWithLoading(URL);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const {
+    message: snackbarMessage,
+    severity: snackbarSeverity,
+    snackbarOpen,
+    showSnackbar,
+    hideSnackbar,
+  } = useSnackbar();
 
   useEffect(() => {
     getCategoriesFromApi();
@@ -52,6 +61,7 @@ const Category = () => {
       type,
     };
     await postRequest(newCategory, "POST");
+    showSnackbar("Categoria agregada con exito.", "success");
     await getCategoriesFromApi();
     setLevel("");
     setType("");
@@ -75,6 +85,7 @@ const Category = () => {
       type,
     };
     await postRequest(editCategory, "PUT", editCategoryId);
+    showSnackbar("Categoria actualizada con exito.", "success");
     await getCategoriesFromApi();
     setLevel("");
     setType("");
@@ -170,7 +181,7 @@ const Category = () => {
                     ? "MASCULINA"
                     : category.type === "FEMALE"
                     ? "FEMENINA"
-                    : "TEAM"}
+                    : "EQUIPO"}
                 </TableCell>
                 <TableCell>
                   <Button onClick={() => handleEditCategory(category.id)}>
@@ -191,6 +202,13 @@ const Category = () => {
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage="Categorias por pagina"
+      />
+
+      <SnackbarMessage
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        open={snackbarOpen}
+        onClose={hideSnackbar}
       />
     </Container>
   );

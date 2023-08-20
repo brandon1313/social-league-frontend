@@ -15,8 +15,9 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import SettingsAccessibilityIcon from "@mui/icons-material/SettingsAccessibility";
 import LanguageIcon from "@mui/icons-material/Language";
+import GroupsIcon from "@mui/icons-material/Groups";
 import { useNavigate } from "react-router-dom";
-
+import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 export const ListMenu = () => {
   const [openSettings, setOpenSettings] = useState(false);
   const [openSales, setOpenSales] = useState(false);
@@ -68,6 +69,18 @@ export const ListMenu = () => {
                 <LanguageIcon />
               </ListItemIcon>
               <ListItemText primary="Categorias" />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate("/team")}>
+              <ListItemIcon>
+                <GroupsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Equipo" />
+            </ListItemButton>
+            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate("/player")}>
+              <ListItemIcon>
+                <EmojiPeopleIcon />
+              </ListItemIcon>
+              <ListItemText primary="Jugadores" />
             </ListItemButton>
           </List>
         </Collapse>
