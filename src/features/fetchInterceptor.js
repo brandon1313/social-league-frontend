@@ -16,7 +16,7 @@ const fetchInterceptor = (url, options) => {
       }
 
       if (response.status === 401) {
-        window.location.href = "/login";
+        window.location.href = "#/login";
       }
 
       return response;
