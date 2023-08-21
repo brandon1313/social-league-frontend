@@ -25,7 +25,9 @@ function Team() {
   const [puntos, setPuntos] = useState(0);
   const [editIndex, setEditIndex] = useState(null);
   const [category, setCategory] = useState(0);
+  const [captain, setCaptain] = useState(0);
   const [categories, setCategories] = useState([]);
+  const [players, setPlayers] = useState([]);
   const { isLoading, error, postRequest } = usePostRequestWithLoading(
     "http://localhost:9898/api/team"
   );
@@ -75,7 +77,13 @@ function Team() {
   const addTeam = async () => {
     try {
       await postRequest(
-        { name: currentTeam, category: category.id, pines, points: puntos },
+        {
+          name: currentTeam,
+          category: category,
+          pines,
+          points: puntos,
+          captain,
+        },
         "POST"
       );
       await getTeamsFromApi();
@@ -102,12 +110,30 @@ function Team() {
     setPines(teams[index].pines);
     setCategory(teams[index].category.id);
     setEditIndex(index);
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    fetch(
+      `http://localhost:9898/api/player/team/${teams[index].id}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => setPlayers(data));
   };
 
   const editTeam = async () => {
     try {
       await postRequest(
-        { name: currentTeam, category: category, pines, points: puntos },
+        {
+          name: currentTeam,
+          category: category,
+          pines,
+          points: puntos,
+          captain,
+        },
         "PUT",
         teams[editIndex].id
       );
@@ -157,7 +183,7 @@ function Team() {
         <InputLabel htmlFor="level-select">Categoria</InputLabel>
         <Select
           value={category}
-          onChange={(e) => setCategory(e.target.value.id)}
+          onChange={(e) => setCategory(e.target.value)}
           label="Category"
           id="level-select"
           style={{ marginBottom: "20px", display: "block" }}
@@ -165,12 +191,41 @@ function Team() {
           {categories.map((c) => {
             return (
               <MenuItem key={c.id} value={c.id}>
-                {c.type}-{c.level}
+                {c.type === "MALE"
+                  ? "MASCULINA "
+                  : c.type === "FEMALE"
+                  ? "FEMENINA "
+                  : "EQUIPO "}
+                - {c?.level}
               </MenuItem>
             );
           })}
         </Select>
       </FormControl>
+
+      {editIndex !== null ? (
+        <FormControl
+          fullWidth
+          sx={{ marginBottom: 2, maxWidth: "50%", marginRight: 2 }}
+        >
+          <InputLabel htmlFor="captain">Jugadores</InputLabel>
+          <Select
+            value={captain}
+            onChange={(e) => setCaptain(e.target.value)}
+            label="Category"
+            id="level-select"
+            style={{ marginBottom: "20px", display: "block" }}
+          >
+            {players.map((c) => {
+              return (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.name} {c.lastName}
+                </MenuItem>
+              );
+            })}
+          </Select>
+        </FormControl>
+      ) : null}
 
       {editIndex === null ? (
         <Button variant="contained" color="primary" onClick={addTeam}>
@@ -210,9 +265,9 @@ function Team() {
                 {team.name}
               </TableCell>
               <TableCell component="th" scope="row">
-                {category.type === "MALE"
+                {category?.type === "MALE"
                   ? "MASCULINA "
-                  : category.type === "FEMALE"
+                  : category?.type === "FEMALE"
                   ? "FEMENINA "
                   : "EQUIPO "}
                 - {team.category?.level}
