@@ -7,6 +7,7 @@ import HomePage from "./components/system/HomePage";
 import LoginForm from "./components/system/LoginForm";
 import Team from "./components/team/Team";
 import User from "./components/users/Users";
+import TournamentCRUD from "./components/tournament/Tournament";
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +18,7 @@ function App() {
           {<Route path="/category" element={<Category />} />}
           {<Route path="/team" element={<Team />} />}
           {<Route path="/player" element={<TeamPlayers />} />}
+          {<Route path="/tournament" element={<TournamentCRUD />} />}
           <Route path="*" element={<div> </div>} />
         </Route>
       </Routes>

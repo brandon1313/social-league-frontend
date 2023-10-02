@@ -21,12 +21,13 @@ import {
   Tooltip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import useSnackbar from "../../features/useSnackbar";
 import SnackbarMessage from "../system/SnackBarMessage";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import AddRoadIcon from "@mui/icons-material/AddRoad";
+import { LineAxis, LineStyle } from "@mui/icons-material";
 function TeamPlayers() {
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("");
@@ -38,7 +39,14 @@ function TeamPlayers() {
   const [openSerieDialog, setOpenSerieDialog] = useState(false);
   const [openLineDialog, setOpenLineDialog] = useState(false);
   const [serie, setSerie] = useState("");
-  const [line, setLine] = useState("");
+  const [line, setLine] = useState(0);
+  const [line1, setLine1] = useState(0);
+  const [line2, setLine2] = useState(0);
+  const [linebk, setLinebk] = useState(0);
+  const [line1bk, setLine1bk] = useState(0);
+  const [line2bk, setLine2bk] = useState(0);
+
+  const [openModifyLines, setOpenModifyLines] = useState(false);
   const [player, setPlayer] = useState({
     birth: "01/01/1900",
     name: "",
@@ -52,6 +60,8 @@ function TeamPlayers() {
     linesQuantity: 0,
     maxLine: 0,
     maxSerie: 0,
+    mail: "",
+    lineAverage: 0.0,
   });
   const {
     message: snackbarMessage,
@@ -156,6 +166,8 @@ function TeamPlayers() {
     if (!player?.maxLine) errors.maxLine = "Obligatorio";
     if (!player?.maxSerie) errors.maxSerie = "Obligatorio";
     if (!player?.category) errors.category = "Obligatorio";
+    if (!player?.mail) errors.mail = "Obligatorio";
+    if (!player?.lineAverage) errors.lineAverage = "Obligatorio";
 
     if (Object.keys(errors).length) {
       showSnackbar("Todos los campos son obligatorios!!", "error");
@@ -183,7 +195,7 @@ function TeamPlayers() {
       requestOptions.body = JSON.stringify({
         ...player,
         category: player.category.id,
-        team: player.team.id,
+        team: selectedTeam,
         birth: "01/01/1900",
       });
       const req = await fetch(
@@ -210,12 +222,34 @@ function TeamPlayers() {
 
   const handleOpenSerie = (player) => {
     setPlayer(player);
-    setOpenLineDialog(true);
+    setOpenSerieDialog(true);
+  };
+
+  const handleModifyLines = async (player) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const req = await fetch(
+      "http://localhost:9898/api/player/backup/" + player.id,
+      requestOptions
+    );
+
+    const data = await req.json();
+
+    const { line1, line2, line3 } = data;
+    setPlayer(player);
+    setLinebk(line1);
+    setLine1bk(line2);
+    setLine2bk(line3);
+    setOpenModifyLines(true);
   };
 
   const handleOpenLine = (player) => {
     setPlayer(player);
-    setOpenSerieDialog(true);
+    setOpenLineDialog(true);
   };
 
   const handleSaveSerie = async () => {
@@ -236,21 +270,52 @@ function TeamPlayers() {
     setUpdated(!updated);
   };
 
-  const handleSaveLine = async () => {
+  const handleClose = () => {
+    setOpenLineDialog(false);
+    setLine(0);
+    setLine2(0);
+    setLine1(0);
+  };
+
+  const handleSaveLinebk = async () => {
     const requestOptions = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(line),
+      body: JSON.stringify([linebk, line1bk, line2bk]),
     };
     const req = await fetch(
-      "http://localhost:9898/api/player/line/" + player.id,
+      "http://localhost:9898/api/player/lines/edit/" + player.id,
+      requestOptions
+    );
+    setOpenModifyLines(false);
+    setLinebk(0);
+    setLine1bk(0);
+    setLine2bk(0);
+    showSnackbar("Lineas Modificadas!!", "success");
+  };
+  const handleSaveLine = async () => {
+    if (line === "" || line2 === "" || line1 === "") {
+      showSnackbar("Debe agregar las 3 lineas", "error");
+      return;
+    }
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([line, line1, line2]),
+    };
+    const req = await fetch(
+      "http://localhost:9898/api/player/lines/" + player.id,
       requestOptions
     );
     setOpenLineDialog(false);
-    setLine(null);
-    showSnackbar("Linea Agragada!!", "success");
+    setLine(0);
+    setLine1(0);
+    setLine2(0);
+    showSnackbar("Linea Agregada!!", "success");
     setUpdated(!updated);
   };
   return (
@@ -279,7 +344,9 @@ function TeamPlayers() {
             <TableCell>Apellido</TableCell>
             <TableCell>Handicap</TableCell>
             <TableCell>Ultima Sumatoria</TableCell>
+            <TableCell>Correo</TableCell>
             <TableCell>Lineas</TableCell>
+            <TableCell>Promedio de Linea</TableCell>
             <TableCell>Linea Max</TableCell>
             <TableCell>Serie Max</TableCell>
             <TableCell>Promedio</TableCell>
@@ -288,17 +355,33 @@ function TeamPlayers() {
         </TableHead>
         <TableBody>
           {players.map((player) => (
-            <TableRow key={player.id}>
+            <TableRow
+              key={player.id}
+              style={
+                player.id ==
+                teams.filter((t) => t.id === selectedTeam)[0]?.captain?.id
+                  ? { backgroundColor: "#BDC3C7" }
+                  : {}
+              }
+            >
               <TableCell>{player.name}</TableCell>
               <TableCell>{player.lastName}</TableCell>
               <TableCell>{player.handicap}</TableCell>
               <TableCell>{player.lastSummation}</TableCell>
+              <TableCell>{player.mail}</TableCell>
               <TableCell>{player.linesQuantity}</TableCell>
+              <TableCell>
+                {player.lineAverage
+                  ? player.lineAverage.toFixed(2)
+                  : (0.0).toFixed(2)}
+              </TableCell>
               <TableCell>{player.maxLine}</TableCell>
               <TableCell>{player.maxSerie}</TableCell>
-              <TableCell>{player.average}</TableCell>
               <TableCell>
-                <Tooltip title="Editar">
+                {player.average ? player.average.toFixed(2) : (0.0).toFixed(2)}
+              </TableCell>
+              <TableCell>
+                <Tooltip>
                   <IconButton onClick={() => handleEdit(player)}>
                     <EditIcon />
                   </IconButton>
@@ -306,17 +389,19 @@ function TeamPlayers() {
                 {/* <IconButton onClick={() => handleDelete(player.id)}>
                   <DeleteIcon />
                 </IconButton> */}
-                <Tooltip title="Agregar Linea">
-                  <IconButton
-                    onClick={() => handleOpenLine(player)}
-                    title="Editar"
-                  >
+                <Tooltip>
+                  <IconButton onClick={() => handleOpenLine(player)}>
                     <PlaylistAddCheckIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip title="Agregar Serie">
+                <Tooltip>
                   <IconButton onClick={() => handleOpenSerie(player)}>
                     <AddRoadIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip>
+                  <IconButton onClick={() => handleModifyLines(player)}>
+                    <LineAxis />
                   </IconButton>
                 </Tooltip>
               </TableCell>
@@ -344,7 +429,7 @@ function TeamPlayers() {
           {player ? "Editar Jugador" : "Agregar Jugador"}
         </DialogTitle>
         <DialogContent>
-          <Box mb={2} mt={2}>
+          <Box mb={2} mt={4}>
             <TextField
               required
               fullWidth
@@ -378,6 +463,18 @@ function TeamPlayers() {
               helperText={validationErrors.phone}
             />
           </Box>
+          <Box mb={2}>
+            <TextField
+              fullWidth
+              label="mail"
+              value={player?.mail || ""}
+              onChange={(e) => handleChange("mail", e)}
+              required
+              error={!!validationErrors.mail}
+              helperText={validationErrors.mail}
+            />
+          </Box>
+
           <Box mb={2}>
             <TextField
               fullWidth
@@ -442,6 +539,18 @@ function TeamPlayers() {
             <TextField
               type="number"
               fullWidth
+              label="Promedio de Linea"
+              value={player?.lineAverage || ""}
+              onChange={(e) => handleChange("lineAverage", e)}
+              required
+              error={!!validationErrors.lineAverage}
+              helperText={validationErrors.lineAverage}
+            />
+          </Box>
+          <Box mb={2}>
+            <TextField
+              type="number"
+              fullWidth
               label="Max Serie"
               value={player?.maxSerie || ""}
               onChange={(e) => handleChange("maxSerie", e)}
@@ -500,7 +609,7 @@ function TeamPlayers() {
         onClose={() => setOpenSerieDialog(false)}
         fullWidth
       >
-        <DialogTitle>Ingrese Serie: {player.name}</DialogTitle>
+        <DialogTitle>Ingrese Serie: {player?.name}</DialogTitle>
         <DialogContent>
           <TextField
             sx={{ marginTop: 2 }}
@@ -522,20 +631,74 @@ function TeamPlayers() {
         onClose={() => setOpenLineDialog(false)}
         fullWidth
       >
-        <DialogTitle>Ingrese Linea: {player.name}</DialogTitle>
+        <DialogTitle>Ingrese Linea: {player?.name}</DialogTitle>
         <DialogContent>
           <TextField
             sx={{ marginTop: 2 }}
             fullWidth
-            label="Line"
+            label="Linea 1"
             type="number"
             value={line}
             onChange={(e) => setLine(e.target.value)}
           />
+          <TextField
+            sx={{ marginTop: 2 }}
+            fullWidth
+            label="Linea 2"
+            type="number"
+            value={line1}
+            onChange={(e) => setLine1(e.target.value)}
+          />
+          <TextField
+            sx={{ marginTop: 2 }}
+            fullWidth
+            label="Linea 3"
+            type="number"
+            value={line2}
+            onChange={(e) => setLine2(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenLineDialog(false)}>Cancelar</Button>
+          <Button onClick={() => handleClose(false)}>Cancelar</Button>
           <Button onClick={() => handleSaveLine()}>Guardar</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openModifyLines}
+        onClose={() => setOpenModifyLines(false)}
+        fullWidth
+      >
+        <DialogTitle>Modificar Lineas: {player?.name}</DialogTitle>
+        <DialogContent>
+          <TextField
+            sx={{ marginTop: 2 }}
+            fullWidth
+            label="Linea 1"
+            type="number"
+            value={linebk}
+            onChange={(e) => setLinebk(e.target.value)}
+          />
+          <TextField
+            sx={{ marginTop: 2 }}
+            fullWidth
+            label="Linea 2"
+            type="number"
+            value={line1bk}
+            onChange={(e) => setLine1bk(e.target.value)}
+          />
+          <TextField
+            sx={{ marginTop: 2 }}
+            fullWidth
+            label="Linea 3"
+            type="number"
+            value={line2bk}
+            onChange={(e) => setLine2bk(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModifyLines(false)}>Cancelar</Button>
+          <Button onClick={() => handleSaveLinebk()}>Guardar</Button>
         </DialogActions>
       </Dialog>
     </Container>

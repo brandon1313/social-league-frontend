@@ -14,6 +14,8 @@ import {
   TableRow,
   TableBody,
   TablePagination,
+  Box,
+  TextField,
 } from "@mui/material";
 import usePostRequestWithLoading from "../../features/usePostRequestWithLoading";
 import useSnackbar from "../../features/useSnackbar";
@@ -24,6 +26,8 @@ const Category = () => {
   const [categories, setCategories] = useState([]);
   const [level, setLevel] = useState("");
   const [type, setType] = useState("");
+  const [maxAverage, setMaxAverage] = useState(0);
+  const [minAverage, setMinAverage] = useState(0);
   const [isEditing, setIsEditing] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState(null);
   const { _isLoading, _error, postRequest } = usePostRequestWithLoading(URL);
@@ -57,14 +61,26 @@ const Category = () => {
 
     const newCategory = {
       id: categories.length + 1,
+      maxAverage,
+      minAverage,
       level,
       type,
     };
-    await postRequest(newCategory, "POST");
-    showSnackbar("Categoria agregada con exito.", "success");
+
+    const result = await postRequest(newCategory, "POST");
+
     await getCategoriesFromApi();
     setLevel("");
     setType("");
+    setMaxAverage(0);
+    setMinAverage(0);
+
+    if (result?.message) {
+      showSnackbar(result.message, "error");
+      return;
+    }
+
+    showSnackbar("Categoria agregada con exito.", "success");
   };
 
   const handleEditCategory = (id) => {
@@ -72,6 +88,8 @@ const Category = () => {
     if (categoryToEdit) {
       setLevel(categoryToEdit.level);
       setType(categoryToEdit.type);
+      setMaxAverage(categoryToEdit.maxAverage);
+      setMinAverage(categoryToEdit.minAverage);
       setEditCategoryId(id);
       setIsEditing(true);
     }
@@ -83,12 +101,17 @@ const Category = () => {
     const editCategory = {
       level,
       type,
+      maxAverage,
+      minAverage,
     };
+
     await postRequest(editCategory, "PUT", editCategoryId);
     showSnackbar("Categoria actualizada con exito.", "success");
     await getCategoriesFromApi();
     setLevel("");
     setType("");
+    setMaxAverage(0);
+    setMinAverage(0);
     setIsEditing(false);
     setEditCategoryId(null);
   };
@@ -141,6 +164,26 @@ const Category = () => {
           <MenuItem value="FEMALE">Femenina</MenuItem>
           <MenuItem value="TEAM">Equipo</MenuItem>
         </Select>
+
+        <Box mb={2} mt={2}>
+          <TextField
+            required
+            fullWidth
+            label="Promedio Minimo"
+            value={minAverage}
+            onChange={(e) => setMinAverage(e.target.value)}
+          />
+        </Box>
+
+        <Box mb={2} mt={2}>
+          <TextField
+            required
+            fullWidth
+            label="Promedio Maximo"
+            value={maxAverage}
+            onChange={(e) => setMaxAverage(e.target.value)}
+          />
+        </Box>
       </FormControl>
 
       {isEditing ? (
@@ -167,6 +210,8 @@ const Category = () => {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Nivel</TableCell>
+              <TableCell>Promedio Minimo</TableCell>
+              <TableCell>Promedio Maximo</TableCell>
               <TableCell>Tipo</TableCell>
               <TableCell></TableCell>
             </TableRow>
@@ -176,6 +221,12 @@ const Category = () => {
               <TableRow key={category.id}>
                 <TableCell>{category.id}</TableCell>
                 <TableCell>{category.level}</TableCell>
+                <TableCell>
+                  {category.minAverage ? category.minAverage.toFixed(2) : 0.0}
+                </TableCell>
+                <TableCell>
+                  {category.maxAverage ? category.maxAverage.toFixed(2) : 0.0}
+                </TableCell>
                 <TableCell>
                   {category.type === "MALE"
                     ? "MASCULINA"

@@ -12,8 +12,16 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import { Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
+import {
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  PlusOneRounded,
+} from "@mui/icons-material";
 import usePostRequestWithLoading from "../../features/usePostRequestWithLoading";
 import SnackbarMessage from "../system/SnackBarMessage";
 import useSnackbar from "../../features/useSnackbar";
@@ -26,11 +34,13 @@ function Team() {
   const [editIndex, setEditIndex] = useState(null);
   const [category, setCategory] = useState(0);
   const [captain, setCaptain] = useState(0);
+  const [addPointsVar, setAddPoints] = useState(0);
   const [categories, setCategories] = useState([]);
   const [players, setPlayers] = useState([]);
   const { isLoading, error, postRequest } = usePostRequestWithLoading(
     "http://localhost:9898/api/team"
   );
+  const [open, setOpen] = useState(false);
 
   const {
     message: snackbarMessage,
@@ -98,10 +108,27 @@ function Team() {
     setCurrentTeam("");
   };
 
-  const deleteTeam = (index) => {
-    const newTeams = [...teams];
-    newTeams.splice(index, 1);
-    setTeams(newTeams);
+  const deleteTeam = async (index) => {
+    try {
+      await fetch(`http://localhost:9898/api/team/${teams[index].id}`, {
+        method: "DELETE",
+      });
+      // Refresh players after deletion
+      const updatedTeams = teams.filter(
+        (player) => player.id !== teams[index].id
+      );
+      setTeams(updatedTeams);
+    } catch (error) {
+      console.error("Failed to delete player", error);
+    }
+  };
+
+  const onCancelEdit = () => {
+    setCurrentTeam("");
+    setPuntos(0);
+    setPines(0);
+    setCategory(null);
+    setEditIndex(null);
   };
 
   const startEditTeam = (index) => {
@@ -148,6 +175,40 @@ function Team() {
     setPines(0);
     setCurrentTeam("");
     setEditIndex(null);
+  };
+
+  const handleOpen = (index) => {
+    setEditIndex(index);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setAddPoints(0);
+  };
+
+  const addPoints = async (index) => {
+    try {
+      const requestOptions = {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(addPointsVar),
+      };
+      fetch(
+        `http://localhost:9898/api/team/points/${teams[editIndex].id}`,
+        requestOptions
+      )
+        .then((res) => res.json())
+        .then((e) => getTeamsFromApi());
+
+      showSnackbar("Team updated successfully!", "success");
+      setAddPoints(0);
+    } catch (err) {
+      console.log(err);
+      showSnackbar("Error creating user.", "error");
+    }
   };
 
   return (
@@ -240,8 +301,7 @@ function Team() {
             variant="contained"
             style={{ marginLeft: "10px" }}
             onClick={() => {
-              setCurrentTeam("");
-              setEditIndex(null);
+              onCancelEdit();
             }}
           >
             Cancelar
@@ -285,6 +345,9 @@ function Team() {
                 <IconButton onClick={() => deleteTeam(index)}>
                   <DeleteIcon />
                 </IconButton>
+                <IconButton onClick={() => handleOpen(index)}>
+                  <PlusOneRounded />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}
@@ -296,6 +359,30 @@ function Team() {
         open={snackbarOpen}
         onClose={hideSnackbar}
       />
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Añadir puntos a: {teams[editIndex]?.name}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="quantity"
+            label="Puntos"
+            type="number"
+            fullWidth
+            value={addPointsVar}
+            onChange={(e) => setAddPoints(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={addPoints} color="primary">
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
