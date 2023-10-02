@@ -20,6 +20,7 @@ import {
 import {
   Delete as DeleteIcon,
   Edit as EditIcon,
+  PlumbingSharp,
   PlusOneRounded,
 } from "@mui/icons-material";
 import usePostRequestWithLoading from "../../features/usePostRequestWithLoading";
@@ -37,6 +38,9 @@ function Team() {
   const [addPointsVar, setAddPoints] = useState(0);
   const [categories, setCategories] = useState([]);
   const [players, setPlayers] = useState([]);
+
+  const [modifyPoints, setModifyPoints] = useState(null);
+  const [mdfyDialog, setMdfyDialog] = useState(false);
   const { isLoading, error, postRequest } = usePostRequestWithLoading(
     "http://localhost:9898/api/team"
   );
@@ -182,11 +186,50 @@ function Team() {
     setOpen(true);
   };
 
+  const handleOpenMdfy = (index) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    fetch(
+      `http://localhost:9898/api/team/backup/${teams[index].id}`,
+      requestOptions
+    )
+      .then((res) => res.json())
+      .then((data) => setModifyPoints(data.points));
+    setEditIndex(index);
+    setMdfyDialog(true);
+  };
   const handleClose = () => {
     setOpen(false);
     setAddPoints(0);
+    setEditIndex(null);
   };
 
+  const handleCloseMdfy = () => {
+    setMdfyDialog(false);
+    setModifyPoints(0);
+    setEditIndex(null);
+  };
+
+  const handleSaveModfy = async () => {
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(modifyPoints),
+    };
+    const req = await fetch(
+      "http://localhost:9898/api/team/points/edit/" + teams[editIndex].id,
+      requestOptions
+    );
+    setMdfyDialog(false);
+    await getTeamsFromApi();
+    showSnackbar("Puntos Modificados!!", "success");
+  };
   const addPoints = async (index) => {
     try {
       const requestOptions = {
@@ -205,6 +248,8 @@ function Team() {
 
       showSnackbar("Team updated successfully!", "success");
       setAddPoints(0);
+      setOpen(false);
+      setEditIndex(null);
     } catch (err) {
       console.log(err);
       showSnackbar("Error creating user.", "error");
@@ -348,6 +393,9 @@ function Team() {
                 <IconButton onClick={() => handleOpen(index)}>
                   <PlusOneRounded />
                 </IconButton>
+                <IconButton onClick={() => handleOpenMdfy(index)}>
+                  <PlumbingSharp />
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}
@@ -379,6 +427,30 @@ function Team() {
             Cancelar
           </Button>
           <Button onClick={addPoints} color="primary">
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={mdfyDialog} onClose={handleCloseMdfy}>
+        <DialogTitle>Modificar puntos a: {teams[editIndex]?.name}</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="quantity"
+            label="Puntos"
+            type="number"
+            fullWidth
+            value={modifyPoints}
+            onChange={(e) => setModifyPoints(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseMdfy} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSaveModfy} color="primary">
             Guardar
           </Button>
         </DialogActions>
