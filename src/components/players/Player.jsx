@@ -394,11 +394,7 @@ function TeamPlayers() {
                     <PlaylistAddCheckIcon />
                   </IconButton>
                 </Tooltip>
-                <Tooltip>
-                  <IconButton onClick={() => handleOpenSerie(player)}>
-                    <AddRoadIcon />
-                  </IconButton>
-                </Tooltip>
+
                 <Tooltip>
                   <IconButton onClick={() => handleModifyLines(player)}>
                     <LineAxis />

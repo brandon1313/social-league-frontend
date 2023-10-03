@@ -50,7 +50,7 @@ function TournamentCRUD() {
       },
     };
     const req = await fetch(
-      "http://localhost:9898/api/tournament/finish" + id,
+      "http://localhost:9898/api/tournament/finish/" + id,
       requestOptions
     ).then((e) => console.log(e));
     setEditingTournament(null);
