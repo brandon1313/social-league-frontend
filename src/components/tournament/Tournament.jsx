@@ -93,12 +93,17 @@ function TournamentCRUD() {
     if (editingTournament.id) {
       let id = editingTournament.id;
       delete editingTournament.id;
+
       const requestOptions = {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(editingTournament),
+        body: JSON.stringify({
+          ...editingTournament,
+          linesAverage: editingTournament.linesAverage.toFixed(2),
+          averageForHDCP: editingTournament.averageForHDCP.toFixed(2),
+        }),
       };
       const req = await fetch(
         "http://localhost:9898/api/tournament/" + id,
@@ -208,7 +213,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Primer Club"
-            value={editingTournament?.firstClubValue || 0}
+            value={editingTournament?.firstClubValue || ""}
             onChange={(e) => handleChange("firstClubValue", e)}
             error={!!validationErrors.firstClubValue}
             helperText={validationErrors.firstClubValue}
@@ -221,7 +226,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Segundo Club"
-            value={editingTournament?.secondClubValue || 0}
+            value={editingTournament?.secondClubValue || ""}
             onChange={(e) => handleChange("secondClubValue", e)}
             error={!!validationErrors.secondClubValue}
             helperText={validationErrors.secondClubValue}
@@ -234,7 +239,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Tercer Club"
-            value={editingTournament?.thirdClubValue || 0}
+            value={editingTournament?.thirdClubValue || ""}
             onChange={(e) => handleChange("thirdClubValue", e)}
             error={!!validationErrors.thirdClubValue}
             helperText={validationErrors.thirdClubValue}
@@ -247,7 +252,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Cuota primer Club"
-            value={editingTournament?.firstClubQuota || 0}
+            value={editingTournament?.firstClubQuota || ""}
             onChange={(e) => handleChange("firstClubQuota", e)}
             error={!!validationErrors.firstClubQuota}
             helperText={validationErrors.firstClubQuota}
@@ -260,7 +265,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Cuota segundo Club"
-            value={editingTournament?.secondClubQuota || 0}
+            value={editingTournament?.secondClubQuota || ""}
             onChange={(e) => handleChange("secondClubQuota", e)}
             error={!!validationErrors.secondClubQuota}
             helperText={validationErrors.secondClubQuota}
@@ -273,7 +278,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Cuota tercer Club"
-            value={editingTournament?.thirdClubQuota || 0}
+            value={editingTournament?.thirdClubQuota || ""}
             onChange={(e) => handleChange("thirdClubQuota", e)}
             error={!!validationErrors.thirdClubQuota}
             helperText={validationErrors.thirdClubQuota}
@@ -286,7 +291,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="Promedio de Lineas"
-            value={editingTournament?.linesAverage || 0}
+            value={editingTournament?.linesAverage || ""}
             onChange={(e) => handleChange("linesAverage", e)}
             error={!!validationErrors.linesAverage}
             helperText={validationErrors.linesAverage}
@@ -343,14 +348,25 @@ function TournamentCRUD() {
         )}
 
         {editingTournament?.id ? (
-          <Button
-            onClick={handleTerminate}
-            variant="contained"
-            color="primary"
-            style={{ marginTop: "20px" }}
-          >
-            Terminar Torneo
-          </Button>
+          <Box mb={2} mt={4}>
+            <Button
+              onClick={handleTerminate}
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "20px", marginRight: "10px" }}
+            >
+              Terminar Torneo
+            </Button>
+
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "20px" }}
+            >
+              Editar Torneo
+            </Button>
+          </Box>
         ) : null}
       </Paper>
 

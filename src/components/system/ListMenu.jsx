@@ -92,6 +92,12 @@ export const ListMenu = () => {
               </ListItemIcon>
               <ListItemText primary="Torneos" />
             </ListItemButton>
+            <ListItemButton sx={{ pl: 4 }} onClick={() => navigate("/general")}>
+              <ListItemIcon>
+                <LanguageIcon />
+              </ListItemIcon>
+              <ListItemText primary="General" />
+            </ListItemButton>
           </List>
         </Collapse>
 

@@ -27,7 +27,7 @@ import useSnackbar from "../../features/useSnackbar";
 import SnackbarMessage from "../system/SnackBarMessage";
 import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
 import AddRoadIcon from "@mui/icons-material/AddRoad";
-import { LineAxis, LineStyle } from "@mui/icons-material";
+import { Calculate, LineAxis, LineStyle } from "@mui/icons-material";
 function TeamPlayers() {
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState("");
@@ -159,15 +159,7 @@ function TeamPlayers() {
     if (!player?.name) errors.name = "Nombre es obligatorio";
     if (!player?.lastName) errors.lastName = "Apellido es obligatorio";
     if (!player?.phone) errors.phone = "Celular es obligatorio";
-    if (!player?.handicap) errors.handicap = "Handicap es obligatorio";
-    if (!player?.lastSummation) errors.lastSummation = "Obligatorio";
-    if (!player?.linesQuantity) errors.linesQuantity = "Obligatorio";
-    if (!player?.average) errors.average = "Obligatorio";
-    if (!player?.maxLine) errors.maxLine = "Obligatorio";
-    if (!player?.maxSerie) errors.maxSerie = "Obligatorio";
     if (!player?.category) errors.category = "Obligatorio";
-    if (!player?.mail) errors.mail = "Obligatorio";
-    if (!player?.lineAverage) errors.lineAverage = "Obligatorio";
 
     if (Object.keys(errors).length) {
       showSnackbar("Todos los campos son obligatorios!!", "error");
@@ -210,11 +202,20 @@ function TeamPlayers() {
       return;
     }
 
-    const req = await fetch(
-      "http://localhost:9898/api/player",
-      requestOptions,
-      player
-    );
+    try {
+      const req = await fetch(
+        "http://localhost:9898/api/player",
+        requestOptions,
+        player
+      );
+      req.json();
+    } catch (error) {
+      showSnackbar(
+        "Hubo un error al guardar al jugador, verifica si el jugador ya existe.",
+        "error"
+      );
+    }
+
     showSnackbar("Jugador creado!!", "success");
     setUpdated(true);
     setOpenDialog(false);
@@ -225,6 +226,21 @@ function TeamPlayers() {
     setOpenSerieDialog(true);
   };
 
+  const updateHDCP = async (player) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const req = await fetch(
+      "http://localhost:9898/api/player/hdcp/" + player.id,
+      requestOptions
+    );
+
+    setUpdated(!updated);
+  };
   const handleModifyLines = async (player) => {
     const requestOptions = {
       method: "GET",
@@ -389,15 +405,21 @@ function TeamPlayers() {
                 {/* <IconButton onClick={() => handleDelete(player.id)}>
                   <DeleteIcon />
                 </IconButton> */}
-                <Tooltip>
+                <Tooltip title="Agregar Lineas">
                   <IconButton onClick={() => handleOpenLine(player)}>
                     <PlaylistAddCheckIcon />
                   </IconButton>
                 </Tooltip>
 
-                <Tooltip>
+                <Tooltip title="Modificar Lineas">
                   <IconButton onClick={() => handleModifyLines(player)}>
                     <LineAxis />
+                  </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Actualizar HDCP">
+                  <IconButton onClick={() => updateHDCP(player)}>
+                    <Calculate />
                   </IconButton>
                 </Tooltip>
               </TableCell>
@@ -454,9 +476,6 @@ function TeamPlayers() {
               label="# Celular"
               value={player?.phone || ""}
               onChange={(e) => handleChange("phone", e)}
-              required
-              error={!!validationErrors.phone}
-              helperText={validationErrors.phone}
             />
           </Box>
           <Box mb={2}>
@@ -465,9 +484,6 @@ function TeamPlayers() {
               label="mail"
               value={player?.mail || ""}
               onChange={(e) => handleChange("mail", e)}
-              required
-              error={!!validationErrors.mail}
-              helperText={validationErrors.mail}
             />
           </Box>
 
@@ -478,9 +494,6 @@ function TeamPlayers() {
               label="Handicap"
               value={player?.handicap || ""}
               onChange={(e) => handleChange("handicap", e)}
-              required
-              error={!!validationErrors.handicap}
-              helperText={validationErrors.handicap}
             />
           </Box>
           <Box mb={2}>
@@ -490,9 +503,6 @@ function TeamPlayers() {
               label="Ultima Sumatoria"
               value={player?.lastSummation || ""}
               onChange={(e) => handleChange("lastSummation", e)}
-              required
-              error={!!validationErrors.lastSummation}
-              helperText={validationErrors.lastSummation}
             />
           </Box>
           <Box mb={2}>
@@ -502,9 +512,6 @@ function TeamPlayers() {
               label="Promedio"
               value={player?.average || ""}
               onChange={(e) => handleChange("average", e)}
-              required
-              error={!!validationErrors.average}
-              helperText={validationErrors.average}
             />
           </Box>
           <Box mb={2}>
@@ -514,9 +521,6 @@ function TeamPlayers() {
               label="# Lineas"
               value={player?.linesQuantity || ""}
               onChange={(e) => handleChange("linesQuantity", e)}
-              required
-              error={!!validationErrors.linesQuantity}
-              helperText={validationErrors.linesQuantity}
             />
           </Box>
           <Box mb={2}>
@@ -526,9 +530,6 @@ function TeamPlayers() {
               label="Max Linea"
               value={player?.maxLine || ""}
               onChange={(e) => handleChange("maxLine", e)}
-              required
-              error={!!validationErrors.maxLine}
-              helperText={validationErrors.maxLine}
             />
           </Box>
           <Box mb={2}>
@@ -538,9 +539,6 @@ function TeamPlayers() {
               label="Promedio de Linea"
               value={player?.lineAverage || ""}
               onChange={(e) => handleChange("lineAverage", e)}
-              required
-              error={!!validationErrors.lineAverage}
-              helperText={validationErrors.lineAverage}
             />
           </Box>
           <Box mb={2}>
@@ -550,9 +548,6 @@ function TeamPlayers() {
               label="Max Serie"
               value={player?.maxSerie || ""}
               onChange={(e) => handleChange("maxSerie", e)}
-              required
-              error={!!validationErrors.maxSerie}
-              helperText={validationErrors.maxSerie}
             />
           </Box>
           <Box>
