@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import {
   TextField,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Paper,
   Box,
   FormControlLabel,
   Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { CheckBox } from "@mui/icons-material";
 import useSnackbar from "../../features/useSnackbar";
@@ -27,6 +27,21 @@ function TournamentCRUD() {
   const [tournaments, setTournaments] = useState([]);
   const [editingTournament, setEditingTournament] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    await handleTerminate();
+    setOpen(false);
+  };
+
   useState(() => {
     const requestOptions = {
       method: "GET",
@@ -150,16 +165,7 @@ function TournamentCRUD() {
     setEditingTournament(tournament);
   };
 
-  const handleDelete = (tournamentToDelete) => {
-    setTournaments(
-      tournaments.filter((tournament) => tournament !== tournamentToDelete)
-    );
-  };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditingTournament({ ...editingTournament, [name]: value });
-  };
 
   return (
     <div>
@@ -172,6 +178,22 @@ function TournamentCRUD() {
           marginTop: "20px",
         }}
       >
+        <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Terminar Torneo</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Esta seguro de terminar el Torneo?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirm} color="secondary">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
         <Box mb={2} mt={4}>
           <TextField
             required
@@ -290,7 +312,7 @@ function TournamentCRUD() {
             type="number"
             required
             fullWidth
-            label="Promedio de Lineas"
+            label="Porcentaje de Lineas"
             value={editingTournament?.linesAverage || ""}
             onChange={(e) => handleChange("linesAverage", e)}
             error={!!validationErrors.linesAverage}
@@ -303,7 +325,7 @@ function TournamentCRUD() {
             type="number"
             required
             fullWidth
-            label="Puntos Handicap"
+            label="Base de HDCP"
             value={editingTournament?.pointsForHDCP || ""}
             onChange={(e) => handleChange("pointsForHDCP", e)}
             error={!!validationErrors.pointsForHDCP}
@@ -316,7 +338,7 @@ function TournamentCRUD() {
             type="number"
             required
             fullWidth
-            label="Promedio Handicap"
+            label="Porcentaje de HDCP"
             value={editingTournament?.averageForHDCP || ""}
             onChange={(e) => handleChange("averageForHDCP", e)}
             error={!!validationErrors.averageForHDCP}
@@ -329,11 +351,33 @@ function TournamentCRUD() {
             type="number"
             required
             fullWidth
-            label="Cantidad de dias"
+            label="Cantidad de Jornadas"
             value={editingTournament?.numberDays || ""}
             onChange={(e) => handleChange("numberDays", e)}
             error={!!validationErrors.numberDays}
             helperText={validationErrors.numberDays}
+          />
+        </Box>
+
+        <Box mb={2} mt={4}>
+          <TextField
+            type="number"
+            required
+            fullWidth
+            label="HDCP minimo"
+            value={editingTournament?.minHDCP || ""}
+            onChange={(e) => handleChange("minHDCP", e)}
+          />
+        </Box>
+
+        <Box mb={2} mt={4}>
+          <TextField
+            type="number"
+            required
+            fullWidth
+            label="HDCP maximo"
+            value={editingTournament?.maxHDCP || ""}
+            onChange={(e) => handleChange("maxHDCP", e)}
           />
         </Box>
         {editingTournament?.id ? null : (
@@ -350,7 +394,7 @@ function TournamentCRUD() {
         {editingTournament?.id ? (
           <Box mb={2} mt={4}>
             <Button
-              onClick={handleTerminate}
+              onClick={handleOpen}
               variant="contained"
               color="primary"
               style={{ marginTop: "20px", marginRight: "10px" }}

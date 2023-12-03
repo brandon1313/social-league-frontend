@@ -19,8 +19,14 @@ import {
   FormControl,
   InputLabel,
   Tooltip,
+  Switch,
+  FormControlLabel,
+
+  DialogContentText,
+ 
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import Delete from "@mui/icons-material/Delete"
 
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import useSnackbar from "../../features/useSnackbar";
@@ -45,7 +51,7 @@ function TeamPlayers() {
   const [linebk, setLinebk] = useState(0);
   const [line1bk, setLine1bk] = useState(0);
   const [line2bk, setLine2bk] = useState(0);
-
+  const [playerToDelete, setPlayerToDelete] = useState(null)
   const [openModifyLines, setOpenModifyLines] = useState(false);
   const [player, setPlayer] = useState({
     birth: "01/01/1900",
@@ -62,6 +68,7 @@ function TeamPlayers() {
     maxSerie: 0,
     mail: "",
     lineAverage: 0.0,
+    sendReportMail: false
   });
   const {
     message: snackbarMessage,
@@ -72,6 +79,15 @@ function TeamPlayers() {
   } = useSnackbar();
 
   const handleChange = (field, event) => {
+
+    if (field === "sendReportMail") {
+      setPlayer({
+        ...player,
+        sendReportMail: event.target.checked,
+      });
+      return;
+    }
+
     if (field === "category") {
       setPlayer({
         ...player,
@@ -152,7 +168,21 @@ function TeamPlayers() {
       console.error("Failed to delete player", error);
     }
   };
+  const [open, setOpen] = useState(false);
 
+  const handleOpenPop = (playerId) => {
+    setPlayerToDelete(playerId)
+    setOpen(true);
+  };
+
+  const handleClosePop = () => {
+    setOpen(false);
+  };
+
+  const handleConfirm = async () => {
+     setOpen(false)
+     await handleDelete(playerToDelete);
+  };
   const handleSave = async () => {
     const errors = {};
 
@@ -160,6 +190,8 @@ function TeamPlayers() {
     if (!player?.lastName) errors.lastName = "Apellido es obligatorio";
     if (!player?.phone) errors.phone = "Celular es obligatorio";
     if (!player?.category) errors.category = "Obligatorio";
+ 
+
 
     if (Object.keys(errors).length) {
       showSnackbar("Todos los campos son obligatorios!!", "error");
@@ -336,6 +368,23 @@ function TeamPlayers() {
   };
   return (
     <Container m={4}>
+
+<Dialog open={open} onClose={handleClosePop}>
+        <DialogTitle>Eliminar Jugador</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Esta seguro de eliminar el Jugador?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePop} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirm} color="secondary">
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
       <FormControl
         fullWidth
         sx={{ marginBottom: 2, maxWidth: "50%", marginTop: 10 }}
@@ -402,9 +451,9 @@ function TeamPlayers() {
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                {/* <IconButton onClick={() => handleDelete(player.id)}>
-                  <DeleteIcon />
-                </IconButton> */}
+                 <IconButton onClick={() => handleOpenPop(player.id)}>
+                  <Delete/>
+                </IconButton>
                 <Tooltip title="Agregar Lineas">
                   <IconButton onClick={() => handleOpenLine(player)}>
                     <PlaylistAddCheckIcon />
@@ -550,6 +599,19 @@ function TeamPlayers() {
               onChange={(e) => handleChange("maxSerie", e)}
             />
           </Box>
+          <Box mb={2} mt={4}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={player?.sendReportMail || false}
+                onChange={(e) => handleChange("sendReportMail", e)}
+                name="sendReportMail"
+                color="primary"
+              />
+            }
+            label="Enviar email"
+          />
+        </Box>
           <Box>
             <InputLabel htmlFor="level-select">Categoria</InputLabel>
             <Select

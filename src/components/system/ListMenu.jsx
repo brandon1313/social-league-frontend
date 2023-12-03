@@ -69,7 +69,7 @@ export const ListMenu = () => {
               <ListItemIcon>
                 <LanguageIcon />
               </ListItemIcon>
-              <ListItemText primary="Categorias" />
+              <ListItemText primary="Divisiones" />
             </ListItemButton>
             <ListItemButton sx={{ pl: 4 }} onClick={() => navigate("/team")}>
               <ListItemIcon>

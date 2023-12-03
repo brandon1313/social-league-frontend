@@ -80,7 +80,7 @@ const Category = () => {
       return;
     }
 
-    showSnackbar("Categoria agregada con exito.", "success");
+    showSnackbar("Division agregada con exito.", "success");
   };
 
   const handleEditCategory = (id) => {
@@ -106,7 +106,7 @@ const Category = () => {
     };
 
     await postRequest(editCategory, "PUT", editCategoryId);
-    showSnackbar("Categoria actualizada con exito.", "success");
+    showSnackbar("Division actualizada con exito.", "success");
     await getCategoriesFromApi();
     setLevel("");
     setType("");
@@ -132,13 +132,13 @@ const Category = () => {
 
   return (
     <Container>
-      <h2>Categorias</h2>
+      <h2>Divisiones</h2>
 
       <FormControl
         fullWidth
         sx={{ marginBottom: 2, maxWidth: "50%", marginRight: 10 }}
       >
-        <InputLabel htmlFor="level-select">Nivel</InputLabel>
+        <InputLabel htmlFor="level-select">Categoria</InputLabel>
         <Select
           value={level}
           onChange={(e) => setLevel(e.target.value)}
@@ -149,11 +149,12 @@ const Category = () => {
           <MenuItem value="B">B</MenuItem>
           <MenuItem value="C">C</MenuItem>
           <MenuItem value="D">D</MenuItem>
+          <MenuItem value="N">N</MenuItem>
         </Select>
       </FormControl>
 
       <FormControl fullWidth sx={{ marginBottom: 2, maxWidth: "50%" }}>
-        <InputLabel htmlFor="type-select">Tipo</InputLabel>
+        <InputLabel htmlFor="type-select">Rama</InputLabel>
         <Select
           value={type}
           onChange={(e) => setType(e.target.value)}
@@ -209,10 +210,10 @@ const Category = () => {
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>Nivel</TableCell>
+              <TableCell>Categoria</TableCell>
               <TableCell>Promedio Minimo</TableCell>
               <TableCell>Promedio Maximo</TableCell>
-              <TableCell>Tipo</TableCell>
+              <TableCell>Rama</TableCell>
               <TableCell></TableCell>
             </TableRow>
           </TableHead>
@@ -252,7 +253,7 @@ const Category = () => {
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        labelRowsPerPage="Categorias por pagina"
+        labelRowsPerPage="Divisiones por pagina"
       />
 
       <SnackbarMessage
