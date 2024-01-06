@@ -314,7 +314,7 @@ function Team() {
           fullWidth
           sx={{ marginBottom: 2, maxWidth: "50%", marginRight: 2 }}
         >
-          <InputLabel htmlFor="captain">Jugadores</InputLabel>
+          <InputLabel htmlFor="captain">Capitan</InputLabel>
           <Select
             value={captain}
             onChange={(e) => setCaptain(e.target.value)}

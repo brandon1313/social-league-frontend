@@ -411,7 +411,7 @@ function TeamPlayers() {
             <TableCell>Ultima Sumatoria</TableCell>
             <TableCell>Correo</TableCell>
             <TableCell>Lineas</TableCell>
-            <TableCell>Promedio de Linea</TableCell>
+            <TableCell>Porcentaje de Linea</TableCell>
             <TableCell>Linea Max</TableCell>
             <TableCell>Serie Max</TableCell>
             <TableCell>Promedio</TableCell>
