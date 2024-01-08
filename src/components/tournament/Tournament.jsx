@@ -365,7 +365,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="HDCP minimo"
-            value={editingTournament?.minHDCP || ""}
+            value={editingTournament?.minHDCP || 0.0}
             onChange={(e) => handleChange("minHDCP", e)}
           />
         </Box>
@@ -376,7 +376,7 @@ function TournamentCRUD() {
             required
             fullWidth
             label="HDCP maximo"
-            value={editingTournament?.maxHDCP || ""}
+            value={editingTournament?.maxHDCP ||0.0}
             onChange={(e) => handleChange("maxHDCP", e)}
           />
         </Box>
