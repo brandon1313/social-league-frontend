@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Tooltip,
 } from "@mui/material";
 import {
   Delete as DeleteIcon,
@@ -356,16 +357,38 @@ function Team() {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell align="left">Acciones</TableCell>
             <TableCell>Nombre del Equipo</TableCell>
             <TableCell>Categoria</TableCell>
             <TableCell>Pines</TableCell>
             <TableCell>Puntos</TableCell>
-            <TableCell align="right">Acciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {teams.map((team, index) => (
             <TableRow key={index}>
+              <TableCell align="left">
+                <Tooltip title="Modificar">
+                  <IconButton onClick={() => startEditTeam(index)}>
+                    <EditIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Eliminar">
+                  <IconButton onClick={() => deleteTeam(index)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Agregar puntos">
+                  <IconButton onClick={() => handleOpen(index)}>
+                    <PlusOneRounded />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Modificar puntos">
+                  <IconButton onClick={() => handleOpenMdfy(index)}>
+                    <PlumbingSharp />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
               <TableCell component="th" scope="row">
                 {team.name}
               </TableCell>
@@ -382,20 +405,6 @@ function Team() {
               </TableCell>
               <TableCell component="th" scope="row">
                 {team.points}
-              </TableCell>
-              <TableCell align="right">
-                <IconButton onClick={() => startEditTeam(index)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => deleteTeam(index)}>
-                  <DeleteIcon />
-                </IconButton>
-                <IconButton onClick={() => handleOpen(index)}>
-                  <PlusOneRounded />
-                </IconButton>
-                <IconButton onClick={() => handleOpenMdfy(index)}>
-                  <PlumbingSharp />
-                </IconButton>
               </TableCell>
             </TableRow>
           ))}

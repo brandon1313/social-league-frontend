@@ -21,12 +21,10 @@ import {
   Tooltip,
   Switch,
   FormControlLabel,
-
   DialogContentText,
- 
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import Delete from "@mui/icons-material/Delete"
+import Delete from "@mui/icons-material/Delete";
 
 import AddReactionIcon from "@mui/icons-material/AddReaction";
 import useSnackbar from "../../features/useSnackbar";
@@ -51,7 +49,7 @@ function TeamPlayers() {
   const [linebk, setLinebk] = useState(0);
   const [line1bk, setLine1bk] = useState(0);
   const [line2bk, setLine2bk] = useState(0);
-  const [playerToDelete, setPlayerToDelete] = useState(null)
+  const [playerToDelete, setPlayerToDelete] = useState(null);
   const [openModifyLines, setOpenModifyLines] = useState(false);
   const [player, setPlayer] = useState({
     birth: "01/01/1900",
@@ -68,7 +66,7 @@ function TeamPlayers() {
     maxSerie: 0,
     mail: "",
     lineAverage: 0.0,
-    sendReportMail: false
+    sendReportMail: false,
   });
   const {
     message: snackbarMessage,
@@ -79,7 +77,6 @@ function TeamPlayers() {
   } = useSnackbar();
 
   const handleChange = (field, event) => {
-
     if (field === "sendReportMail") {
       setPlayer({
         ...player,
@@ -171,7 +168,7 @@ function TeamPlayers() {
   const [open, setOpen] = useState(false);
 
   const handleOpenPop = (playerId) => {
-    setPlayerToDelete(playerId)
+    setPlayerToDelete(playerId);
     setOpen(true);
   };
 
@@ -180,18 +177,15 @@ function TeamPlayers() {
   };
 
   const handleConfirm = async () => {
-     setOpen(false)
-     await handleDelete(playerToDelete);
+    setOpen(false);
+    await handleDelete(playerToDelete);
   };
   const handleSave = async () => {
     const errors = {};
 
     if (!player?.name) errors.name = "Nombre es obligatorio";
     if (!player?.lastName) errors.lastName = "Apellido es obligatorio";
-    if (!player?.phone) errors.phone = "Celular es obligatorio";
     if (!player?.category) errors.category = "Obligatorio";
- 
-
 
     if (Object.keys(errors).length) {
       showSnackbar("Todos los campos son obligatorios!!", "error");
@@ -368,8 +362,7 @@ function TeamPlayers() {
   };
   return (
     <Container m={4}>
-
-<Dialog open={open} onClose={handleClosePop}>
+      <Dialog open={open} onClose={handleClosePop}>
         <DialogTitle>Eliminar Jugador</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -401,10 +394,25 @@ function TeamPlayers() {
           ))}
         </Select>
       </FormControl>
-
+      {selectedTeam ? (
+        <Box mt={4}>
+           <Tooltip title="Agregar Jugador">
+          <IconButton
+            color="primary"
+            onClick={() => {
+              setPlayer(null);
+              setOpenDialog(true);
+            }}
+          >
+            <AddReactionIcon />
+          </IconButton>
+          </Tooltip>
+        </Box>
+      ) : null}
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>Acciones</TableCell>
             <TableCell>Nombre</TableCell>
             <TableCell>Apellido</TableCell>
             <TableCell>Handicap</TableCell>
@@ -415,7 +423,6 @@ function TeamPlayers() {
             <TableCell>Linea Max</TableCell>
             <TableCell>Serie Max</TableCell>
             <TableCell>Promedio</TableCell>
-            <TableCell>Acciones</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -429,31 +436,17 @@ function TeamPlayers() {
                   : {}
               }
             >
-              <TableCell>{player.name}</TableCell>
-              <TableCell>{player.lastName}</TableCell>
-              <TableCell>{player.handicap}</TableCell>
-              <TableCell>{player.lastSummation}</TableCell>
-              <TableCell>{player.mail}</TableCell>
-              <TableCell>{player.linesQuantity}</TableCell>
               <TableCell>
-                {player.lineAverage
-                  ? player.lineAverage.toFixed(2)
-                  : (0.0).toFixed(2)}
-              </TableCell>
-              <TableCell>{player.maxLine}</TableCell>
-              <TableCell>{player.maxSerie}</TableCell>
-              <TableCell>
-                {player.average ? player.average.toFixed(2) : (0.0).toFixed(2)}
-              </TableCell>
-              <TableCell>
-                <Tooltip>
+                <Tooltip title="Editar Jugador">
                   <IconButton onClick={() => handleEdit(player)}>
                     <EditIcon />
                   </IconButton>
                 </Tooltip>
-                 <IconButton onClick={() => handleOpenPop(player.id)}>
-                  <Delete/>
-                </IconButton>
+                <Tooltip title="Eliminar Jugador">
+                  <IconButton onClick={() => handleOpenPop(player.id)}>
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
                 <Tooltip title="Agregar Lineas">
                   <IconButton onClick={() => handleOpenLine(player)}>
                     <PlaylistAddCheckIcon />
@@ -472,24 +465,28 @@ function TeamPlayers() {
                   </IconButton>
                 </Tooltip>
               </TableCell>
+              <TableCell>{player.name}</TableCell>
+              <TableCell>{player.lastName}</TableCell>
+              <TableCell>{player.handicap}</TableCell>
+              <TableCell>{player.lastSummation}</TableCell>
+              <TableCell>{player.mail}</TableCell>
+              <TableCell>{player.linesQuantity}</TableCell>
+              <TableCell>
+                {player.lineAverage
+                  ? player.lineAverage.toFixed(2)
+                  : (0.0).toFixed(2)}
+              </TableCell>
+              <TableCell>{player.maxLine}</TableCell>
+              <TableCell>{player.maxSerie}</TableCell>
+              <TableCell>
+                {player.average ? player.average.toFixed(2) : (0.0).toFixed(2)}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
 
-      {selectedTeam ? (
-        <Box mt={4}>
-          <IconButton
-            color="primary"
-            onClick={() => {
-              setPlayer(null);
-              setOpenDialog(true);
-            }}
-          >
-            <AddReactionIcon />
-          </IconButton>
-        </Box>
-      ) : null}
+
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth>
         <DialogTitle>
@@ -523,7 +520,7 @@ function TeamPlayers() {
               type="number"
               fullWidth
               label="# Celular"
-              value={player?.phone || ""}
+              value={player?.phone || 0}
               onChange={(e) => handleChange("phone", e)}
             />
           </Box>
@@ -541,7 +538,7 @@ function TeamPlayers() {
               fullWidth
               type="number"
               label="Handicap"
-              value={player?.handicap || ""}
+              value={player?.handicap || 0}
               onChange={(e) => handleChange("handicap", e)}
             />
           </Box>
@@ -600,18 +597,18 @@ function TeamPlayers() {
             />
           </Box>
           <Box mb={2} mt={4}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={player?.sendReportMail || false}
-                onChange={(e) => handleChange("sendReportMail", e)}
-                name="sendReportMail"
-                color="primary"
-              />
-            }
-            label="Enviar email"
-          />
-        </Box>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={player?.sendReportMail || false}
+                  onChange={(e) => handleChange("sendReportMail", e)}
+                  name="sendReportMail"
+                  color="primary"
+                />
+              }
+              label="Enviar email"
+            />
+          </Box>
           <Box>
             <InputLabel htmlFor="level-select">Categoria</InputLabel>
             <Select
