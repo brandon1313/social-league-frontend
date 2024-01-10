@@ -582,7 +582,7 @@ function TeamPlayers() {
             <TextField
               type="number"
               fullWidth
-              label="Promedio de Linea"
+              label="Porcentaje de Linea"
               value={player?.lineAverage || ""}
               onChange={(e) => handleChange("lineAverage", e)}
             />
